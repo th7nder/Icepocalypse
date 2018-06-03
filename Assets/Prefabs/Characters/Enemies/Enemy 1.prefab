@@ -72,7 +72,6 @@ GameObject:
   - component: {fileID: 50291679098316076}
   - component: {fileID: 114809755364476554}
   - component: {fileID: 95277074253476050}
-  - component: {fileID: 114231856520136072}
   m_Layer: 0
   m_Name: Enemy 1
   m_TagString: Enemy
@@ -134,7 +133,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1638983339565842}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.2555251, y: -2.1924398, z: 0}
+  m_LocalPosition: {x: -0.9267645, y: -1.8970404, z: 0}
   m_LocalScale: {x: 0.79172087, y: 2.2843926, z: 1}
   m_Children:
   - {fileID: 4942407808885896}
@@ -350,22 +349,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &114231856520136072
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1638983339565842}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0b51bf3fb7cc81498bfdf423771a67e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HealthPointsMax: 100
-  IsQTE: 0
-  ClickedTheCircle: 0
-  ClickedAttack: 0
-  FistCollider: {fileID: 0}
 --- !u!114 &114809755364476554
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -243,7 +243,7 @@ public class WildDogScript : MonoBehaviour
     {
         //Vector3 _jumpVector = new Vector3(_playerObject.transform.position.x - transform.position.x, 0.05f, transform.position.z);
         //_rb.AddForce( _jumpVector, ForceMode2D.Impulse);
-        Time.timeScale = 0.05f;
+        //Time.timeScale = 0.05f;
 
         if ( ClickedTheCircle == false && _circle == null )
         {

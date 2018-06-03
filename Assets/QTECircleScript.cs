@@ -27,7 +27,6 @@ public class QTECircleScript : MonoBehaviour {
         {
             if (_qteType == "Enemy")
             {
-                Debug.Log("kolko znika.");
                 FatherObject.GetComponent<EnemyController>().CancelQTE();
             }
 
@@ -35,7 +34,7 @@ public class QTECircleScript : MonoBehaviour {
         }
 	}
 
-    void OnMouseDown()
+    void OnMouseUp()
     {
         if ( _qteType == "Enemy" )
         {
@@ -47,7 +46,6 @@ public class QTECircleScript : MonoBehaviour {
         {
             FatherObject.GetComponent<WildDogScript>().ClickedTheCircle = true;
             Destroy(gameObject);
-            Debug.Log("destroy");
         }
     }
 }

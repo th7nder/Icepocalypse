@@ -49,6 +49,8 @@ public class EnemyController : MonoBehaviour {
     public Collider2D FistCollider1;
     public Collider2D FistCollider2;
 
+    public GameObject HitFlag;
+
     enum Facing
     {
         Right,
@@ -70,6 +72,10 @@ public class EnemyController : MonoBehaviour {
 	
 	void Start ()
 	{
+        //Time.timeScale = 0.1f;
+
+        HitFlag.SetActive(false);
+
         FistCollider1.enabled = false;
         FistCollider2.enabled = false;
 
@@ -112,13 +118,14 @@ public class EnemyController : MonoBehaviour {
 	{
         var stateInfo = _anim.GetCurrentAnimatorStateInfo(0);
 
-        if (stateInfo.IsName("Base Layer.Attack") || stateInfo.IsName("Base Layer.Defend") || _canHeFight)
+        if (stateInfo.IsName("Base Layer.Attack") || stateInfo.IsName("Base Layer.Defend"))
         {
             _sideFlag = true;
         }
 
-        if ( _sideFlag && !stateInfo.IsName("Base Layer.Attack") && !stateInfo.IsName("Base Layer.Defend") && !_canHeFight )
+        if ( _sideFlag && !stateInfo.IsName("Base Layer.Attack") && !stateInfo.IsName("Base Layer.Defend") )
         {
+            Debug.Log("animcaj nie gra");
             _canHeFight = true;
             _sideFlag = false;
             FistCollider1.enabled = false;
@@ -186,13 +193,20 @@ public class EnemyController : MonoBehaviour {
 
     void OnTriggerEnter2D( Collider2D col )
     {
-        if (col.gameObject.tag == "Wall" )
+        if (col.gameObject.tag == "Wall")
         {
             ChangeFacingDirection();
         }
 
         if (col.gameObject.tag == "PlayerFist" && _isUnderAttack && !_isDefending )//&& _isUnderAttack && !_isDefending )
         {
+            if (!_isDefending)
+            {
+                Debug.Log("nie broni sie");
+            }
+
+            HitFlag.SetActive(!HitFlag.active);
+
             Debug.Log("enemy health: " + _enemyHealthPoints);
             SetHealth(-10);
             _isUnderAttack = false;
@@ -341,6 +355,11 @@ public class EnemyController : MonoBehaviour {
 
         float x = Random.Range(0f, 3.0f);
 
+        if (_isDefending)
+        {
+            //_anim.SetBool("defend", true);
+        }
+
         if ( x < 1.0f && _canHeFight )
         {
             _canHeFight = false;
@@ -357,11 +376,16 @@ public class EnemyController : MonoBehaviour {
             _isUnderAttack = true;
             float x = Random.Range(0f, 2.0f);
 
-            if (x <= 0.1f && _canHeFight)
+            if (!_canHeFight)
+            {
+               // Debug.Log("pownien muc");
+            }
+
+            if (x <= 1.0f)
             {
                 _canHeFight = false;
-                _anim.SetBool("defend", true);
-                _animatingTime = Time.time;
+                //_anim.SetBool("defend", true);
+                //_animatingTime = Time.time;
                 _isDefending = true;
                 Debug.Log("defend");
             }

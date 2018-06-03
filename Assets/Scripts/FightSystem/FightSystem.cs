@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
@@ -25,12 +25,10 @@ public class FightSystem : MonoBehaviour {
 
     void Start()
     {
-        Time.timeScale = 1.0f;
-
         FistCollider.enabled = false;
 
         IsQTE = false;
-        _anim = GetComponent<Animator>();
+        _anim = GetComponentInChildren<Animator>();
         _healthPoints = HealthPointsMax;
     }
 
@@ -48,7 +46,7 @@ public class FightSystem : MonoBehaviour {
             {
                 Debug.Log("super atak");
                 ClickedTheCircle = false;
-                _anim.SetBool("playersuperatt", true);
+                _anim.SetBool("SuperAttack", true);
             }
 
             return;
@@ -56,12 +54,12 @@ public class FightSystem : MonoBehaviour {
 
         var stateInfo = _anim.GetCurrentAnimatorStateInfo(0);
 
-        if (stateInfo.IsName("Base Layer.PlayerPunch") || stateInfo.IsName("Base Layer.PlayerDefend") || stateInfo.IsName("Base Layer.PlayerSuperPunch"))
+        if (stateInfo.IsName("Base Layer.PlayerPunchBare") || stateInfo.IsName("Base Layer.PlayerDefend") || stateInfo.IsName("Base Layer.PlayerSuperPunchBare"))
         {
             _sideFlag = true;
         }
 
-        if (_sideFlag == true && !stateInfo.IsName("Base Layer.PlayerPunch") && !stateInfo.IsName("Base Layer.PlayerDefend") && !stateInfo.IsName("Base Layer.PlayerSuperPunch"))
+        if (_sideFlag == true && !stateInfo.IsName("Base Layer.PlayerPunchBare") && !stateInfo.IsName("Base Layer.PlayerDefend") && !stateInfo.IsName("Base Layer.PlayerSuperPunchBare"))
         {
             _sideFlag = false;
             _isDefending = false;
@@ -69,26 +67,28 @@ public class FightSystem : MonoBehaviour {
             FistCollider.enabled = false;
         }
 
+        
         if (_canIFight)
         {
- 
-                if ( ClickedAttack || Input.GetKey(KeyCode.F) )
-                {
-                    ShootRay();
+            if ( ClickedAttack || Input.GetKey(KeyCode.F) )
+            {
+                ShootRay();
 
-                    ClickedAttack = false;
-                    _canIFight = false;
-                    FistCollider.enabled = true;
-                    _anim.SetBool("playerattack", true);
-                                   
-                }
-                else if ( Input.GetKeyDown(KeyCode.G) )
-                {
-                    _canIFight = false;
-                    _isDefending = true;
-                    _anim.SetBool("playerdefend", true);
-                }
+                ClickedAttack = false;
+                _canIFight = false;
+                FistCollider.enabled = true;
+                _anim.SetTrigger("Attack");
+                GetComponent<PlayerControllerExperimental>().StopMovement();
+                                
+            }
+            else if ( Input.GetKeyDown(KeyCode.G) )
+            {
+                _canIFight = false;
+                _isDefending = true;
+                _anim.SetBool("playerdefend", true);
+            }
          }
+
 
     }
 
@@ -97,18 +97,12 @@ public class FightSystem : MonoBehaviour {
         RaycastHit2D hit;
 
         Vector2 RayDirection = new Vector2(transform.position.x, transform.position.y + 1.2f);
-
         Debug.DrawRay(RayDirection, transform.localScale.x * Vector3.right * 5.0f, Color.yellow, 2.0f);
-
         hit = Physics2D.Raycast(RayDirection, transform.localScale.x * Vector3.right, 5.0f);
         if (hit.collider != null)
         {
             if (hit.collider.tag == "Enemy")
                 hit.collider.gameObject.SendMessage("Defend");
-        }
-        else
-        {
-            //Debug.Log("nie ma kolizji");
         }
     }
 
@@ -142,7 +136,6 @@ public class FightSystem : MonoBehaviour {
         {
             _healthPoints = 0;
         }
-
     }
 
 }
