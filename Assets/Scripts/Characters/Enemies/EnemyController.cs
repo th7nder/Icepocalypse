@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour {
+    public GameObject CanvasObject;
+
     public GameObject QteButton;
 
     public int EnemyHealthPointsMax = 100;
@@ -49,6 +51,8 @@ public class EnemyController : MonoBehaviour {
     public Collider2D FistCollider1;
     public Collider2D FistCollider2;
 
+    //public GameObject HitFlag;
+
     enum Facing
     {
         Right,
@@ -70,6 +74,10 @@ public class EnemyController : MonoBehaviour {
 	
 	void Start ()
 	{
+        //Time.timeScale = 0.1f;
+
+        //HitFlag.SetActive(false);
+
         FistCollider1.enabled = false;
         FistCollider2.enabled = false;
 
@@ -112,12 +120,12 @@ public class EnemyController : MonoBehaviour {
 	{
         var stateInfo = _anim.GetCurrentAnimatorStateInfo(0);
 
-        if (stateInfo.IsName("Base Layer.Attack") || stateInfo.IsName("Base Layer.Defend") || _canHeFight)
+        if (stateInfo.IsName("Base Layer.Attack") || stateInfo.IsName("Base Layer.Defend"))
         {
             _sideFlag = true;
         }
 
-        if ( _sideFlag && !stateInfo.IsName("Base Layer.Attack") && !stateInfo.IsName("Base Layer.Defend") && !_canHeFight )
+        if ( _sideFlag && !stateInfo.IsName("Base Layer.Attack") && !stateInfo.IsName("Base Layer.Defend") )
         {
             _canHeFight = true;
             _sideFlag = false;
@@ -186,15 +194,17 @@ public class EnemyController : MonoBehaviour {
 
     void OnTriggerEnter2D( Collider2D col )
     {
-        if (col.gameObject.tag == "Wall" )
+        if (col.gameObject.tag == "Wall")
         {
             ChangeFacingDirection();
         }
 
-        if (col.gameObject.tag == "PlayerFist" && _isUnderAttack && !_isDefending )//&& _isUnderAttack && !_isDefending )
+        if (col.gameObject.tag == "PlayerFist" )//&& _isUnderAttack && !_isDefending )
         {
-            Debug.Log("enemy health: " + _enemyHealthPoints);
+            //HitFlag.SetActive(!HitFlag.active);
+
             SetHealth(-10);
+            Debug.Log("enemy health: " + _enemyHealthPoints);
             _isUnderAttack = false;
 
             if (_enemyHealthPoints <= 0)
@@ -323,9 +333,12 @@ public class EnemyController : MonoBehaviour {
 
     GameObject PutCircle( Vector3 vector )
     {
-        GameObject circle = Instantiate(QteButton, vector, Quaternion.identity) as GameObject;
+        GameObject circle = Instantiate(QteButton, CanvasObject.transform);
+        //Instantiate(QteButton, new Vector3( CanvasObject.transform.position.x, CanvasObject.transform.position.y, 0f), Quaternion.identity, CanvasObject.transform ) as GameObject;
         circle.GetComponent<QTECircleScript>().FatherObject = gameObject;
+        //Instantiate(QteButton, CanvasObject.transform);
         circle.GetComponent<QTECircleScript>()._qteType = "Enemy";
+        circle.GetComponent<QTECircleScript>().LifeTime = 10.0f;
         return circle;
     }
 
@@ -340,6 +353,11 @@ public class EnemyController : MonoBehaviour {
     {
 
         float x = Random.Range(0f, 3.0f);
+
+        if (_isDefending)
+        {
+            //_anim.SetBool("defend", true);
+        }
 
         if ( x < 1.0f && _canHeFight )
         {
@@ -357,11 +375,16 @@ public class EnemyController : MonoBehaviour {
             _isUnderAttack = true;
             float x = Random.Range(0f, 2.0f);
 
-            if (x <= 0.1f && _canHeFight)
+            if (!_canHeFight)
+            {
+               // Debug.Log("pownien muc");
+            }
+
+            if (x <= 0.8f)
             {
                 _canHeFight = false;
                 _anim.SetBool("defend", true);
-                _animatingTime = Time.time;
+                //_animatingTime = Time.time;
                 _isDefending = true;
                 Debug.Log("defend");
             }

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
@@ -17,6 +17,8 @@ public class FightSystem : MonoBehaviour {
     [HideInInspector]
     public bool IsQTE;
     [HideInInspector]
+    public bool IsDogQTE;
+    [HideInInspector]
     public bool ClickedTheCircle;
     [HideInInspector]
     public bool ClickedAttack;
@@ -25,12 +27,10 @@ public class FightSystem : MonoBehaviour {
 
     void Start()
     {
-        Time.timeScale = 1.0f;
-
         FistCollider.enabled = false;
 
         IsQTE = false;
-        _anim = GetComponent<Animator>();
+        _anim = GetComponentInChildren<Animator>();
         _healthPoints = HealthPointsMax;
     }
 
@@ -48,20 +48,32 @@ public class FightSystem : MonoBehaviour {
             {
                 Debug.Log("super atak");
                 ClickedTheCircle = false;
-                _anim.SetBool("playersuperatt", true);
+                _anim.SetBool("SuperAttack", true);
             }
 
             return;
         }
+        else if (IsDogQTE)
+            {
+            if (ClickedTheCircle)
+                {
+                    Debug.Log("super atak");
+                    ClickedTheCircle = false;
+                    _anim.SetBool("SuperAttack", true);
+                    _anim.SetBool("WatchOut", false);
+                }
+
+                return;
+            }
 
         var stateInfo = _anim.GetCurrentAnimatorStateInfo(0);
 
-        if (stateInfo.IsName("Base Layer.PlayerPunch") || stateInfo.IsName("Base Layer.PlayerDefend") || stateInfo.IsName("Base Layer.PlayerSuperPunch"))
+        if (stateInfo.IsName("Base Layer.PlayerPunchBare") || stateInfo.IsName("Base Layer.PlayerDefend") || stateInfo.IsName("Base Layer.PlayerSuperPunchBare"))
         {
             _sideFlag = true;
         }
 
-        if (_sideFlag == true && !stateInfo.IsName("Base Layer.PlayerPunch") && !stateInfo.IsName("Base Layer.PlayerDefend") && !stateInfo.IsName("Base Layer.PlayerSuperPunch"))
+        if (_sideFlag == true && !stateInfo.IsName("Base Layer.PlayerPunchBare") && !stateInfo.IsName("Base Layer.PlayerDefend") && !stateInfo.IsName("Base Layer.PlayerSuperPunchBare"))
         {
             _sideFlag = false;
             _isDefending = false;
@@ -69,26 +81,28 @@ public class FightSystem : MonoBehaviour {
             FistCollider.enabled = false;
         }
 
+        
         if (_canIFight)
         {
- 
-                if ( ClickedAttack || Input.GetKey(KeyCode.F) )
-                {
-                    ShootRay();
+            if ( ClickedAttack || Input.GetKey(KeyCode.F) )
+            {
+                ShootRay();
 
-                    ClickedAttack = false;
-                    _canIFight = false;
-                    FistCollider.enabled = true;
-                    _anim.SetBool("playerattack", true);
-                                   
-                }
-                else if ( Input.GetKeyDown(KeyCode.G) )
-                {
-                    _canIFight = false;
-                    _isDefending = true;
-                    _anim.SetBool("playerdefend", true);
-                }
+                ClickedAttack = false;
+                _canIFight = false;
+                FistCollider.enabled = true;
+                _anim.SetTrigger("Attack");
+                GetComponent<PlayerControllerExperimental>().StopMovement();
+                                
+            }
+            else if ( Input.GetKeyDown(KeyCode.G) )
+            {
+                _canIFight = false;
+                _isDefending = true;
+                _anim.SetBool("playerdefend", true);
+            }
          }
+
 
     }
 
@@ -96,19 +110,17 @@ public class FightSystem : MonoBehaviour {
     {
         RaycastHit2D hit;
 
-        Vector2 RayDirection = new Vector2(transform.position.x, transform.position.y + 1.2f);
-
+        Vector2 RayDirection = new Vector2(transform.position.x, transform.position.y + 0.5f);
         Debug.DrawRay(RayDirection, transform.localScale.x * Vector3.right * 5.0f, Color.yellow, 2.0f);
-
-        hit = Physics2D.Raycast(RayDirection, transform.localScale.x * Vector3.right, 5.0f);
+        int layerMask = LayerMask.GetMask("Enemy");
+        hit = Physics2D.Raycast(RayDirection, transform.localScale.x * Vector3.right, 5.0f,layerMask );
         if (hit.collider != null)
         {
             if (hit.collider.tag == "Enemy")
+            {
                 hit.collider.gameObject.SendMessage("Defend");
-        }
-        else
-        {
-            //Debug.Log("nie ma kolizji");
+                Debug.Log("wyslalaem");
+            }
         }
     }
 
@@ -142,7 +154,30 @@ public class FightSystem : MonoBehaviour {
         {
             _healthPoints = 0;
         }
+    }
 
+    public void GetReady()
+    {
+        Debug.Log("wywoluje");
+        _anim.SetBool("WatchOut", true);
+        _anim.SetBool("Movement", false);
+        GetComponent<PlayerControllerExperimental>().StopMovement();
+    }
+
+    public void FallDown()
+    {
+        //GetComponent<BoxCollider2D>().isTrigger = true;
+        //GetComponent<Rigidbody2D>().isKinematic = true;
+        Debug.Log("upadam");
+        _anim.SetBool("FallDown", true);
+        _anim.SetBool("WatchOut", false);
+    }
+
+    public void DogIsDead()
+    {
+        Debug.Log("dajemy animacje zabijania psa");
+        _anim.SetBool("KillTheDog", true);
+        _anim.SetBool("FallDown", false);
     }
 
 }

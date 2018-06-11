@@ -8,17 +8,35 @@ public class CameraController : MonoBehaviour
     public GameObject Player;
     private float _differenceX;
     private float _differenceY;
-    void Start()
+
+    ParticleSystem[] _childrenParticles;
+    void Start() 
     {
         Player = GameObject.FindGameObjectWithTag("Player");
         gameObject.transform.position = new Vector3(Player.transform.position.x, Player.transform.position.y, gameObject.transform.position.z);
+        _childrenParticles = gameObject.GetComponentsInChildren<ParticleSystem>();
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
         gameObject.transform.position = new Vector3(Player.transform.position.x, Player.transform.position.y, gameObject.transform.position.z);
+    }
 
+    public void OnWarmAreaEnter()
+    {
+        foreach (ParticleSystem particleSystem in _childrenParticles) 
+        {
+            particleSystem.enableEmission = false;
+        }
+    }
+
+    public void OnWarmAreaExit()
+    {
+        foreach (ParticleSystem particleSystem in _childrenParticles) 
+        {
+            particleSystem.enableEmission = true;
+        }
     }
 };
 
